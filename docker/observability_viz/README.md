@@ -13,8 +13,8 @@ Real-time monitoring and visualization for your Claude Code sessions.
 2. **Download the configuration files**:
    ```bash
    # Download docker-compose.yml and .env
-   curl -o docker-compose.yml https://github.com/jcernuda/graphana_test/releases/latest/download/docker-compose.yml
-   curl -o .env https://github.com/jcernuda/graphana_test/releases/latest/download/.env
+   curl -o docker-compose.yml https://github.com/JaimeCernuda/iowarp-hooks/releases/latest/download/docker-compose.yml
+   curl -o .env https://github.com/JaimeCernuda/iowarp-hooks/releases/latest/download/.env
    ```
 
 3. **Start the dashboard**:
@@ -104,6 +104,8 @@ docker-compose down --rmi all -v
 This dashboard automatically works with Claude Code hooks. The hooks send events to InfluxDB, which Grafana then visualizes in real-time.
 
 For hook setup, see: [Claude Code Hooks Documentation](https://docs.anthropic.com/en/docs/claude-code/hooks)
+
+Built with iowarp-hooks for easy installation and management.
 
 ## 📈 What's Monitored
 
