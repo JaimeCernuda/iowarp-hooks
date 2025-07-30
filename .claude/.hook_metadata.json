@@ -1,0 +1,31 @@
+{
+  "installed_hook_sets": {
+    "observability_viz": {
+      "installed_files": [
+        "hooks/send_event_influxdb.py"
+      ],
+      "hook_entries": {
+        "UserPromptSubmit": 0,
+        "PreToolUse": 0,
+        "PostToolUse": 0,
+        "SessionStart": 0,
+        "Stop": 0,
+        "SubagentStop": 0,
+        "PreCompact": 0,
+        "Notification": 0
+      },
+      "inputs": {
+        "influxdb_token": "claude-observability-token",
+        "influxdb_url": "http://localhost:8086",
+        "influxdb_org": "events-org",
+        "influxdb_bucket": "application-events",
+        "project_name": "iowarp"
+      },
+      "config": {
+        "name": "observability_viz",
+        "version": "2.0.0",
+        "description": "Clean InfluxDB-based observability hooks for Claude Code with Grafana visualization"
+      }
+    }
+  }
+}

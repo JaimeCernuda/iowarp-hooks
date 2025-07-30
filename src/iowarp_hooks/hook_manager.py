@@ -88,11 +88,13 @@ def installed():
         target_dir = installer.get_target_directory()
         settings_file = target_dir / "settings.json"
         
-        if settings_file.exists():
-            with open(settings_file, 'r') as f:
-                settings = json.load(f)
+        metadata_file = target_dir / ".hook_metadata.json"
+        
+        if metadata_file.exists():
+            with open(metadata_file, 'r') as f:
+                metadata = json.load(f)
             
-            installed_hook_sets = settings.get("installed_hook_sets", {})
+            installed_hook_sets = metadata.get("installed_hook_sets", {})
             if installed_hook_sets:
                 location = "Local" if install_type == "local" else "Global"
                 console.print(f"\n[bold cyan]{location} Installation ({target_dir}):[/bold cyan]")
@@ -117,10 +119,10 @@ def installed():
                 console.print(table)
     
     # Check if no installations found
-    local_settings = Path.cwd() / ".claude" / "settings.json"
-    global_settings = Path.home() / ".claude" / "settings.json"
+    local_metadata = Path.cwd() / ".claude" / ".hook_metadata.json"
+    global_metadata = Path.home() / ".claude" / ".hook_metadata.json"
     
-    if not local_settings.exists() and not global_settings.exists():
+    if not local_metadata.exists() and not global_metadata.exists():
         console.print("[yellow]No hook sets are currently installed.[/yellow]")
 
 

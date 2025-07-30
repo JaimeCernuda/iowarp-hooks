@@ -76,6 +76,7 @@ class HookInstaller:
     def _update_settings(self, target_dir: Path, config: Dict[str, Any], inputs: Dict[str, str], hook_set_name: str, installed_files: list):
         """Update the settings.json file with hook configurations."""
         settings_file = target_dir / "settings.json"
+        metadata_file = target_dir / ".hook_metadata.json"
         
         # Load existing settings or create new
         if settings_file.exists():
@@ -84,11 +85,16 @@ class HookInstaller:
         else:
             settings = {}
         
-        # Ensure required sections exist
+        # Load existing metadata or create new
+        if metadata_file.exists():
+            with open(metadata_file, 'r') as f:
+                metadata = json.load(f)
+        else:
+            metadata = {"installed_hook_sets": {}}
+        
+        # Ensure hooks section exists in settings
         if "hooks" not in settings:
             settings["hooks"] = {}
-        if "installed_hook_sets" not in settings:
-            settings["installed_hook_sets"] = {}
         
         # Process hook configurations from the config
         hook_configs = config.get("hooks", {})
@@ -101,10 +107,7 @@ class HookInstaller:
             # Process templates in hook commands
             processed_config = template_processor.process_data(hook_config, inputs)
             
-            # Add metadata to identify this hook set
-            processed_config["_hook_set"] = hook_set_name
-            
-            # Add to settings
+            # Add to settings (no metadata in settings.json)
             if hook_type not in settings["hooks"]:
                 settings["hooks"][hook_type] = []
             
@@ -115,8 +118,8 @@ class HookInstaller:
             # Add the hook configuration
             settings["hooks"][hook_type].append(processed_config)
         
-        # Store metadata for this hook set
-        settings["installed_hook_sets"][hook_set_name] = {
+        # Store metadata separately
+        metadata["installed_hook_sets"][hook_set_name] = {
             "installed_files": installed_files,
             "hook_entries": hook_set_entries,
             "inputs": inputs,
@@ -127,24 +130,35 @@ class HookInstaller:
             }
         }
         
-        # Write updated settings
+        # Write updated settings (clean for Claude Code)
         with open(settings_file, 'w') as f:
             json.dump(settings, f, indent=2)
+        
+        # Write metadata separately
+        with open(metadata_file, 'w') as f:
+            json.dump(metadata, f, indent=2)
     
     def uninstall_hook_set(self, hook_set_name: str):
         """Remove a hook set from the target directory."""
         target_dir = self.get_target_directory()
         settings_file = target_dir / "settings.json"
+        metadata_file = target_dir / ".hook_metadata.json"
         
-        if not settings_file.exists():
-            raise Exception(f"No hooks are installed (settings.json not found)")
+        if not metadata_file.exists():
+            raise Exception(f"No hook metadata found (.hook_metadata.json not found)")
         
-        # Load settings
-        with open(settings_file, 'r') as f:
-            settings = json.load(f)
+        # Load settings and metadata
+        if settings_file.exists():
+            with open(settings_file, 'r') as f:
+                settings = json.load(f)
+        else:
+            settings = {"hooks": {}}
+        
+        with open(metadata_file, 'r') as f:
+            metadata = json.load(f)
         
         # Check if hook set is installed
-        installed_hook_sets = settings.get("installed_hook_sets", {})
+        installed_hook_sets = metadata.get("installed_hook_sets", {})
         if hook_set_name not in installed_hook_sets:
             raise Exception(f"Hook set '{hook_set_name}' is not installed")
         
@@ -166,14 +180,27 @@ class HookInstaller:
                     dir_path.rmdir()
                     print(f"Removed empty directory: {dir_path.relative_to(target_dir)}")
         
-        # Remove hook entries from settings.json
+        # Remove hook entries from settings.json based on indices
         hook_entries = hook_set_info.get("hook_entries", {})
-        for hook_type, entry_indices in hook_entries.items():
+        
+        # We need to track which entries to remove and do it in reverse order
+        entries_to_remove = []
+        for hook_type, entry_index in hook_entries.items():
+            if hook_type in settings.get("hooks", {}):
+                entries_to_remove.append((hook_type, entry_index))
+        
+        # Sort by index in reverse order to remove from end first
+        entries_to_remove.sort(key=lambda x: x[1], reverse=True)
+        
+        # Remove entries for this hook set
+        for hook_type, _ in entries_to_remove:
+            # For now, we'll remove all entries that match this hook set's command pattern
+            # This is less precise but safer than index-based removal
             if hook_type in settings["hooks"]:
-                # Remove entries that belong to this hook set (by _hook_set metadata)
+                original_count = len(settings["hooks"][hook_type])
                 settings["hooks"][hook_type] = [
-                    entry for entry in settings["hooks"][hook_type]
-                    if entry.get("_hook_set") != hook_set_name
+                    entry for i, entry in enumerate(settings["hooks"][hook_type])
+                    if i not in [e[1] for e in entries_to_remove if e[0] == hook_type]
                 ]
                 
                 # Remove empty hook type arrays
@@ -181,18 +208,25 @@ class HookInstaller:
                     del settings["hooks"][hook_type]
         
         # Remove hook set metadata
-        del installed_hook_sets[hook_set_name]
+        del metadata["installed_hook_sets"][hook_set_name]
         
         # Clean up empty sections
-        if not settings["hooks"]:
-            del settings["hooks"]
-        if not installed_hook_sets:
-            del settings["installed_hook_sets"]
+        if not settings.get("hooks"):
+            settings = {}
         
         # Write updated settings or remove file if empty
-        if settings:
+        if settings and settings.get("hooks"):
             with open(settings_file, 'w') as f:
                 json.dump(settings, f, indent=2)
         else:
-            settings_file.unlink()
-            print("Removed settings.json (no hooks remaining)")
+            if settings_file.exists():
+                settings_file.unlink()
+                print("Removed settings.json (no hooks remaining)")
+        
+        # Write updated metadata or remove if empty
+        if metadata["installed_hook_sets"]:
+            with open(metadata_file, 'w') as f:
+                json.dump(metadata, f, indent=2)
+        else:
+            metadata_file.unlink()
+            print("Removed .hook_metadata.json (no hook sets remaining)")

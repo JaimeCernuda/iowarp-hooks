@@ -1,41 +1,41 @@
-[2025-07-30T09:43:14.986984] Hook script started
+[2025-07-30T13:57:27.453971] Hook script started
 
-[2025-07-30T09:43:14.987483] Parsed args
+[2025-07-30T13:57:27.454508] Parsed args
   Data: {
   "source_app": "iowarp",
   "event_type": "SessionStart",
   "add_chat": false
 }
 
-[2025-07-30T09:43:14.990542] InfluxDB sender initialized, client exists: True
+[2025-07-30T13:57:27.457397] InfluxDB sender initialized, client exists: True
 
-[2025-07-30T09:43:14.990596] Received input data
+[2025-07-30T13:57:27.457458] Received input data
   Data: {
-  "session_id": "e112264e-655e-4053-a28f-2b38c0ff8929",
-  "transcript_path": "/home/jcernuda/.claude/projects/-home-jcernuda-graphana-test-test-iowarp-hooks/e112264e-655e-4053-a28f-2b38c0ff8929.jsonl",
+  "session_id": "f8d73ada-2119-4e9b-9a63-a7cbc3869143",
+  "transcript_path": "/home/jcernuda/.claude/projects/-home-jcernuda-graphana-test-test-iowarp-hooks/f8d73ada-2119-4e9b-9a63-a7cbc3869143.jsonl",
   "cwd": "/home/jcernuda/graphana_test/test/iowarp-hooks",
   "hook_event_name": "SessionStart",
   "source": "startup"
 }
 
-[2025-07-30T09:43:14.990638] Attempting to send event to InfluxDB
+[2025-07-30T13:57:27.457503] Attempting to send event to InfluxDB
   Data: {
   "source_app": "iowarp",
-  "session_id": "e112264e-655e-4053-a28f-2b38c0ff8929",
+  "session_id": "f8d73ada-2119-4e9b-9a63-a7cbc3869143",
   "hook_event_type": "SessionStart",
   "payload": {
-    "session_id": "e112264e-655e-4053-a28f-2b38c0ff8929",
-    "transcript_path": "/home/jcernuda/.claude/projects/-home-jcernuda-graphana-test-test-iowarp-hooks/e112264e-655e-4053-a28f-2b38c0ff8929.jsonl",
+    "session_id": "f8d73ada-2119-4e9b-9a63-a7cbc3869143",
+    "transcript_path": "/home/jcernuda/.claude/projects/-home-jcernuda-graphana-test-test-iowarp-hooks/f8d73ada-2119-4e9b-9a63-a7cbc3869143.jsonl",
     "cwd": "/home/jcernuda/graphana_test/test/iowarp-hooks",
     "hook_event_name": "SessionStart",
     "source": "startup"
   },
-  "timestamp": 1753886594990
+  "timestamp": 1753901847457
 }
 
-[2025-07-30T09:43:14.992827] Event send result: False
+[2025-07-30T13:57:27.459716] Event send result: False
 
-[2025-07-30T09:43:14.992855] Failed to send event SessionStart to InfluxDB
+[2025-07-30T13:57:27.459745] Failed to send event SessionStart to InfluxDB
 
-[2025-07-30T09:43:14.992883] Hook script completed
+[2025-07-30T13:57:27.459775] Hook script completed
 
