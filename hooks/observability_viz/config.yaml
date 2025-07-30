@@ -144,4 +144,4 @@ interactive_install:
       type: "exit"
       actions:
         - type: "exit_with_message"
-          message: "No changes made. Consider 'iowarp-hooks install observability_log claude local --project-name {project_name}' for file-based logging."
+          message: "No changes made. Consider using the file-based logging alternative (iowarp-hooks install observability_log claude local)"
