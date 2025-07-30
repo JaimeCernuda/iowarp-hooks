@@ -127,6 +127,10 @@ class InteractiveInstaller:
         console.print()
         
         for input_name, input_config in input_configs.items():
+            # Skip if already pre-filled
+            if input_name in inputs:
+                continue
+                
             prompt_text = input_config.get("prompt", f"Enter {input_name}")
             default = input_config.get("default")
             required = input_config.get("required", True)

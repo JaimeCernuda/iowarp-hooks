@@ -43,7 +43,7 @@ class ActionContext:
 class ShowMessageAction(InstallationAction):
     """Action to display a message to the user."""
     
-    def __init__(self, message: str):
+    def __init__(self, message: str, **kwargs):
         self.message = message
     
     def execute(self, context: ActionContext) -> bool:
@@ -56,7 +56,7 @@ class ShowMessageAction(InstallationAction):
 class ExitWithMessageAction(InstallationAction):
     """Action to exit installation with a helpful message."""
     
-    def __init__(self, message: str):
+    def __init__(self, message: str, **kwargs):
         self.message = message
     
     def execute(self, context: ActionContext) -> bool:
@@ -68,7 +68,7 @@ class ExitWithMessageAction(InstallationAction):
 class CopyDockerInfrastructureAction(InstallationAction):
     """Action to copy Docker infrastructure files."""
     
-    def __init__(self, source: str, target: str):
+    def __init__(self, source: str, target: str, **kwargs):
         self.source = source
         self.target = target
     
@@ -115,7 +115,7 @@ class CopyDockerInfrastructureAction(InstallationAction):
 class ValidatePortsAction(InstallationAction):
     """Action to validate that required ports are available."""
     
-    def __init__(self, ports: list):
+    def __init__(self, ports: list, **kwargs):
         self.ports = ports
     
     def execute(self, context: ActionContext) -> bool:
