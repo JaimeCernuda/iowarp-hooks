@@ -146,6 +146,10 @@ class ValidatePortsAction(InstallationAction):
 class CheckDockerAction(InstallationAction):
     """Action to check if Docker is available."""
     
+    def __init__(self, **kwargs):
+        # CheckDockerAction doesn't need any parameters
+        pass
+    
     def execute(self, context: ActionContext) -> bool:
         try:
             import subprocess
