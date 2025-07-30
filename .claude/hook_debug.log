@@ -1,0 +1,41 @@
+[2025-07-30T09:43:14.986984] Hook script started
+
+[2025-07-30T09:43:14.987483] Parsed args
+  Data: {
+  "source_app": "iowarp",
+  "event_type": "SessionStart",
+  "add_chat": false
+}
+
+[2025-07-30T09:43:14.990542] InfluxDB sender initialized, client exists: True
+
+[2025-07-30T09:43:14.990596] Received input data
+  Data: {
+  "session_id": "e112264e-655e-4053-a28f-2b38c0ff8929",
+  "transcript_path": "/home/jcernuda/.claude/projects/-home-jcernuda-graphana-test-test-iowarp-hooks/e112264e-655e-4053-a28f-2b38c0ff8929.jsonl",
+  "cwd": "/home/jcernuda/graphana_test/test/iowarp-hooks",
+  "hook_event_name": "SessionStart",
+  "source": "startup"
+}
+
+[2025-07-30T09:43:14.990638] Attempting to send event to InfluxDB
+  Data: {
+  "source_app": "iowarp",
+  "session_id": "e112264e-655e-4053-a28f-2b38c0ff8929",
+  "hook_event_type": "SessionStart",
+  "payload": {
+    "session_id": "e112264e-655e-4053-a28f-2b38c0ff8929",
+    "transcript_path": "/home/jcernuda/.claude/projects/-home-jcernuda-graphana-test-test-iowarp-hooks/e112264e-655e-4053-a28f-2b38c0ff8929.jsonl",
+    "cwd": "/home/jcernuda/graphana_test/test/iowarp-hooks",
+    "hook_event_name": "SessionStart",
+    "source": "startup"
+  },
+  "timestamp": 1753886594990
+}
+
+[2025-07-30T09:43:14.992827] Event send result: False
+
+[2025-07-30T09:43:14.992855] Failed to send event SessionStart to InfluxDB
+
+[2025-07-30T09:43:14.992883] Hook script completed
+

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Main CLI for iowarp-hooks."""
 
+import json
 import os
 import sys
 from pathlib import Path
@@ -76,6 +77,51 @@ def list():
         table.add_row(name, description, inputs, targets)
     
     console.print(table)
+
+
+@cli.command()
+def installed():
+    """List currently installed hook sets."""
+    # Try local first, then global
+    for install_type in ["local", "global"]:
+        installer = HookInstaller("claude", install_type)
+        target_dir = installer.get_target_directory()
+        settings_file = target_dir / "settings.json"
+        
+        if settings_file.exists():
+            with open(settings_file, 'r') as f:
+                settings = json.load(f)
+            
+            installed_hook_sets = settings.get("installed_hook_sets", {})
+            if installed_hook_sets:
+                location = "Local" if install_type == "local" else "Global"
+                console.print(f"\n[bold cyan]{location} Installation ({target_dir}):[/bold cyan]")
+                
+                table = Table(title=f"Installed Hook Sets - {location}")
+                table.add_column("Name", style="cyan", no_wrap=True)
+                table.add_column("Version", style="green")
+                table.add_column("Description", style="magenta")
+                table.add_column("Files", style="yellow")
+                
+                for hook_set_name, hook_info in installed_hook_sets.items():
+                    config = hook_info.get("config", {})
+                    file_count = len(hook_info.get("installed_files", []))
+                    
+                    table.add_row(
+                        hook_set_name,
+                        config.get("version", "N/A"),
+                        config.get("description", "No description"),
+                        f"{file_count} files"
+                    )
+                
+                console.print(table)
+    
+    # Check if no installations found
+    local_settings = Path.cwd() / ".claude" / "settings.json"
+    global_settings = Path.home() / ".claude" / "settings.json"
+    
+    if not local_settings.exists() and not global_settings.exists():
+        console.print("[yellow]No hook sets are currently installed.[/yellow]")
 
 
 @cli.command()
