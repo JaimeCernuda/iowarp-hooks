@@ -2,10 +2,10 @@ name: Build and Push Docker Images
 
 on:
   push:
-    branches: [main]
+    branches: [master]
     paths: ['docker/**']
   pull_request:
-    branches: [main]
+    branches: [master]
     paths: ['docker/**']
   release:
     types: [published]
