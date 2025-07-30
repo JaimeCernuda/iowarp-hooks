@@ -18,7 +18,8 @@ inputs:
   influxdb_token:
     prompt: "Enter InfluxDB token"
     required: true
-    description: "InfluxDB authentication token"
+    default: "claude-observability-token"
+    description: "InfluxDB authentication token (default matches Docker container)"
   influxdb_org:
     prompt: "Enter InfluxDB organization"
     required: false

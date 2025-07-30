@@ -62,12 +62,14 @@ class InteractiveInstaller:
                 console.print()
             
             # Present path choices
-            selected_path = self._get_user_path_choice()
-            if not selected_path:
+            path_choice = self._get_user_path_choice()
+            if not path_choice:
                 return False
             
+            selected_path_name, selected_path = path_choice
+            
             # Collect parameters based on path type
-            inputs = self._collect_parameters(selected_path.path_type)
+            inputs = self._collect_parameters(selected_path.path_type, selected_path_name)
             
             # Execute path actions
             if not self._execute_path_actions(selected_path, inputs):
@@ -86,7 +88,7 @@ class InteractiveInstaller:
             console.print(f"[red]Installation failed: {e}[/red]")
             return False
     
-    def _get_user_path_choice(self) -> Optional[PathConfig]:
+    def _get_user_path_choice(self) -> Optional[tuple[str, PathConfig]]:
         """Present path choices to user and get selection."""
         if not self.paths:
             console.print("[red]No installation paths configured[/red]")
@@ -105,14 +107,22 @@ class InteractiveInstaller:
         choices = [str(i) for i in range(1, len(path_items) + 1)]
         choice = Prompt.ask("Select option", choices=choices)
         
-        # Return selected path config
-        selected_path_name = path_items[int(choice) - 1][0]
-        return self.paths[selected_path_name]
+        # Return selected path name and config
+        selected_path_name, selected_path_config = path_items[int(choice) - 1]
+        return (selected_path_name, selected_path_config)
     
-    def _collect_parameters(self, path_type: InstallationPath) -> Dict[str, str]:
+    def _collect_parameters(self, path_type: InstallationPath, selected_path_name: str = None) -> Dict[str, str]:
         """Collect parameters based on path type."""
         inputs = {}
         input_configs = self.hook_config.get("inputs", {})
+        
+        # Pre-fill Docker deployment defaults for observability_viz
+        if selected_path_name == "docker_deploy" and self.hook_name == "observability_viz":
+            inputs["influxdb_token"] = "claude-observability-token"
+            inputs["influxdb_url"] = "http://localhost:8086"
+            inputs["influxdb_org"] = "events-org"
+            inputs["influxdb_bucket"] = "application-events"
+            console.print("[dim]ℹ️  Using pre-configured Docker container settings for InfluxDB connection[/dim]")
         
         console.print()
         
