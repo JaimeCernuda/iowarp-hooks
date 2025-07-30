@@ -1,0 +1,2 @@
+{"source_app": "test-logging", "session_id": "test-session", "hook_event_type": "TestEvent", "payload": {"session_id": "test-session", "test": "data"}, "timestamp": 1753878834393, "timestamp_iso": "2025-07-30T07:33:54.393000"}
+{"source_app": "test-logging", "session_id": "test-session-2", "hook_event_type": "PreToolUse", "payload": {"session_id": "test-session-2", "tool": {"name": "Read", "parameters": {"file": "test.py"}}}, "timestamp": 1753878847384, "timestamp_iso": "2025-07-30T07:34:07.384000"}

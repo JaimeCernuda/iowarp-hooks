@@ -1,0 +1,69 @@
+FROM grafana/grafana:10.2.0
+
+# Switch to root to install plugins and copy files
+USER root
+
+# Install additional plugins (run as root, then fix permissions)
+RUN grafana-cli plugins install grafana-clock-panel && \
+    grafana-cli plugins install grafana-simple-json-datasource && \
+    chown -R 472:0 /var/lib/grafana
+
+# Create provisioning directories
+RUN mkdir -p /etc/grafana/provisioning/datasources /etc/grafana/provisioning/dashboards
+
+# Copy datasource configuration
+COPY <<'EOF' /etc/grafana/provisioning/datasources/influxdb.yml
+apiVersion: 1
+
+datasources:
+  - name: InfluxDB
+    type: influxdb
+    access: proxy
+    url: http://influxdb:8086
+    uid: influxdb
+    jsonData:
+      version: Flux
+      organization: events-org
+      defaultBucket: application-events
+      tlsSkipVerify: true
+    secureJsonData:
+      token: claude-observability-token
+    editable: true
+EOF
+
+# Copy dashboard provider configuration
+COPY <<'EOF' /etc/grafana/provisioning/dashboards/dashboard.yml
+apiVersion: 1
+
+providers:
+  - name: 'default'
+    orgId: 1
+    folder: ''
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 10
+    allowUiUpdates: true
+    options:
+      path: /etc/grafana/provisioning/dashboards
+EOF
+
+# Copy the actual dashboard JSON
+COPY grafana/provisioning/dashboards/claude-code-events.json /etc/grafana/provisioning/dashboards/
+
+# Set proper permissions (grafana user is 472)
+RUN chown -R 472:0 /etc/grafana/provisioning
+
+# Switch back to grafana user
+USER 472
+
+# Set default admin password via environment variable
+ENV GF_SECURITY_ADMIN_PASSWORD=admin \
+    GF_USERS_ALLOW_SIGN_UP=false \
+    GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
+
+# Expose the default Grafana port
+EXPOSE 3000
+
+# Health check to ensure Grafana is ready
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD curl -f http://localhost:3000/api/health || exit 1

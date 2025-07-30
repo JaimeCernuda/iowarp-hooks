@@ -1,0 +1,35 @@
+[2025-07-30T07:27:48.543114] Hook script started
+
+[2025-07-30T07:27:48.543689] Parsed args
+  Data: {
+  "source_app": "my-test-project",
+  "event_type": "TestEvent",
+  "add_chat": false
+}
+
+[2025-07-30T07:27:48.551942] InfluxDB sender initialized, client exists: True
+
+[2025-07-30T07:27:48.552027] Received input data
+  Data: {
+  "session_id": "test-session",
+  "test": "data"
+}
+
+[2025-07-30T07:27:48.552082] Attempting to send event to InfluxDB
+  Data: {
+  "source_app": "my-test-project",
+  "session_id": "test-session",
+  "hook_event_type": "TestEvent",
+  "payload": {
+    "session_id": "test-session",
+    "test": "data"
+  },
+  "timestamp": 1753878468552
+}
+
+[2025-07-30T07:27:48.554926] Event send result: False
+
+[2025-07-30T07:27:48.554959] Failed to send event TestEvent to InfluxDB
+
+[2025-07-30T07:27:48.555113] Hook script completed
+

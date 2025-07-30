@@ -1,0 +1,16 @@
+apiVersion: 1
+
+datasources:
+  - name: InfluxDB
+    type: influxdb
+    access: proxy
+    url: http://influxdb:8086
+    uid: influxdb
+    jsonData:
+      version: Flux
+      organization: events-org
+      defaultBucket: application-events
+      tlsSkipVerify: true
+    secureJsonData:
+      token: claude-observability-token
+    editable: true

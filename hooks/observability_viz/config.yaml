@@ -1,0 +1,146 @@
+name: observability_viz
+description: "Clean InfluxDB-based observability hooks for Claude Code with Grafana visualization"
+version: "2.0.0"
+
+targets:
+  - claude
+
+inputs:
+  project_name:
+    prompt: "Enter your project name"
+    required: true
+    description: "Name of the project for telemetry identification"
+  influxdb_url:
+    prompt: "Enter InfluxDB URL"
+    required: false
+    default: "http://localhost:8086"
+    description: "InfluxDB server URL"
+  influxdb_token:
+    prompt: "Enter InfluxDB token"
+    required: true
+    description: "InfluxDB authentication token"
+  influxdb_org:
+    prompt: "Enter InfluxDB organization"
+    required: false
+    default: "events-org"
+    description: "InfluxDB organization name"
+  influxdb_bucket:
+    prompt: "Enter InfluxDB bucket"
+    required: false
+    default: "application-events"
+    description: "InfluxDB bucket name for storing events"
+
+dependencies:
+  - influxdb-client>=1.38.0
+  - python-dotenv>=1.0.0
+
+hooks:
+  UserPromptSubmit:
+    matcher: ""
+    hooks:
+      - type: command
+        command: "uv run .claude/hooks/send_event_influxdb.py --source-app {project_name} --event-type UserPromptSubmit"
+
+  PreToolUse:
+    matcher: ""
+    hooks:
+      - type: command
+        command: "uv run .claude/hooks/send_event_influxdb.py --source-app {project_name} --event-type PreToolUse"
+
+  PostToolUse:
+    matcher: ""
+    hooks:
+      - type: command
+        command: "uv run .claude/hooks/send_event_influxdb.py --source-app {project_name} --event-type PostToolUse"
+
+  SessionStart:
+    matcher: ""
+    hooks:
+      - type: command
+        command: "uv run .claude/hooks/send_event_influxdb.py --source-app {project_name} --event-type SessionStart"
+
+  Stop:
+    matcher: ""
+    hooks:
+      - type: command
+        command: "uv run .claude/hooks/send_event_influxdb.py --source-app {project_name} --event-type Stop --add-chat"
+
+  SubagentStop:
+    matcher: ""
+    hooks:
+      - type: command
+        command: "uv run .claude/hooks/send_event_influxdb.py --source-app {project_name} --event-type SubagentStop"
+
+  PreCompact:
+    matcher: ""
+    hooks:
+      - type: command
+        command: "uv run .claude/hooks/send_event_influxdb.py --source-app {project_name} --event-type PreCompact --add-chat"
+
+  Notification:
+    matcher: ""
+    hooks:
+      - type: command
+        command: "uv run .claude/hooks/send_event_influxdb.py --source-app {project_name} --event-type Notification"
+
+environment_template: |
+  # InfluxDB Configuration for observability_viz hooks
+  INFLUXDB_URL={influxdb_url}
+  INFLUXDB_TOKEN={influxdb_token}
+  INFLUXDB_ORG={influxdb_org}
+  INFLUXDB_BUCKET={influxdb_bucket}
+
+# Interactive installation configuration
+interactive_install:
+  pre_install_prompt: |
+    The observability_viz hooks need an available InfluxDB to consume events,
+    and a Grafana deployment to visualize them. This hook comes with a docker
+    compose setup with custom images that will set everything up for you.
+  
+  paths:
+    docker_deploy:
+      label: "Deploy Docker infrastructure (Recommended)"
+      type: "default"
+      actions:
+        - type: "check_docker"
+        - type: "validate_ports"
+          ports: [3000, 8086]
+        - type: "copy_docker_infrastructure"
+          source: "hooks/observability_viz/infrastructure"
+          target: "docker/observability_docker"
+        - type: "show_message"
+          message: |
+            
+            🐋 Docker infrastructure deployed to: .claude/docker/observability_docker/
+            
+            To start the observability dashboard:
+              cd .claude/docker/observability_docker
+              docker compose up -d
+            
+            Access your dashboard:
+              • Grafana: http://localhost:3000 (admin/admin)
+              • InfluxDB: http://localhost:8086
+            
+            To stop: docker compose down
+            To cleanup: docker compose down -v
+    
+    bring_own:
+      label: "I will bring my own InfluxDB and Grafana (find dashboard in repo)"
+      type: "full"
+      actions:
+        - type: "show_message"
+          message: |
+            
+            📊 Dashboard available at: https://github.com/jcernuda/graphana_test/tree/main/observability_docker/grafana/provisioning/dashboards
+            
+            Make sure your InfluxDB is configured with:
+              • Organization: {influxdb_org}
+              • Bucket: {influxdb_bucket}
+              • Token: {influxdb_token}
+    
+    exit:
+      label: "Exit (No changes made, consider using observability_log instead)"
+      type: "exit"
+      actions:
+        - type: "exit_with_message"
+          message: "No changes made. Consider 'iowarp-hooks install observability_log claude local --project-name {project_name}' for file-based logging."

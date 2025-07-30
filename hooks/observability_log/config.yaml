@@ -1,0 +1,73 @@
+name: observability_log
+description: "Simple file-based observability hooks for Claude Code that log to JSON Lines format"
+version: "2.0.0"
+
+targets:
+  - claude
+
+inputs:
+  project_name:
+    prompt: "Enter your project name"
+    required: true
+    description: "Name of the project for telemetry identification"
+  log_file:
+    prompt: "Enter log file path (optional)"
+    required: false
+    default: "claude_events.jsonl"
+    description: "Path to the log file (defaults to claude_events.jsonl in current directory)"
+
+dependencies:
+  - python-dotenv>=1.0.0
+
+hooks:
+  UserPromptSubmit:
+    matcher: ""
+    hooks:
+      - type: command
+        command: "uv run .claude/hooks/send_event_influxdb.py --source-app {project_name} --event-type UserPromptSubmit"
+
+  PreToolUse:
+    matcher: ""
+    hooks:
+      - type: command
+        command: "uv run .claude/hooks/send_event_influxdb.py --source-app {project_name} --event-type PreToolUse"
+
+  PostToolUse:
+    matcher: ""
+    hooks:
+      - type: command
+        command: "uv run .claude/hooks/send_event_influxdb.py --source-app {project_name} --event-type PostToolUse"
+
+  SessionStart:
+    matcher: ""
+    hooks:
+      - type: command
+        command: "uv run .claude/hooks/send_event_influxdb.py --source-app {project_name} --event-type SessionStart"
+
+  Stop:
+    matcher: ""
+    hooks:
+      - type: command
+        command: "uv run .claude/hooks/send_event_influxdb.py --source-app {project_name} --event-type Stop --add-chat"
+
+  SubagentStop:
+    matcher: ""
+    hooks:
+      - type: command
+        command: "uv run .claude/hooks/send_event_influxdb.py --source-app {project_name} --event-type SubagentStop"
+
+  PreCompact:
+    matcher: ""
+    hooks:
+      - type: command
+        command: "uv run .claude/hooks/send_event_influxdb.py --source-app {project_name} --event-type PreCompact --add-chat"
+
+  Notification:
+    matcher: ""
+    hooks:
+      - type: command
+        command: "uv run .claude/hooks/send_event_influxdb.py --source-app {project_name} --event-type Notification"
+
+environment_template: |
+  # Log File Configuration for observability_log hooks
+  CLAUDE_LOG_FILE={log_file}

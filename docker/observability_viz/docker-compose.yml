@@ -1,0 +1,76 @@
+version: '3.8'
+
+services:
+  # Default: Ephemeral InfluxDB (data lost on container stop)
+  influxdb:
+    image: ghcr.io/jcernuda/graphana_test-influxdb:latest
+    container_name: claude-influxdb
+    ports:
+      - "8086:8086"
+    tmpfs:
+      - /var/lib/influxdb2:noexec,nosuid,size=512m
+    environment:
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=${INFLUXDB_TOKEN:-claude-observability-token}
+      - DOCKER_INFLUXDB_INIT_PASSWORD=${INFLUXDB_PASSWORD:-admin123456}
+    profiles: ["", "ephemeral"]
+    networks:
+      - claude-observability
+    healthcheck:
+      test: ["CMD", "influx", "ping", "--host", "http://localhost:8086"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Optional: Persistent InfluxDB (data survives container restarts)
+  influxdb-persistent:
+    image: ghcr.io/jcernuda/graphana_test-influxdb:latest
+    container_name: claude-influxdb
+    ports:
+      - "8086:8086"
+    volumes:
+      - claude-influxdb-data:/var/lib/influxdb2
+    environment:
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=${INFLUXDB_TOKEN:-claude-observability-token}
+      - DOCKER_INFLUXDB_INIT_PASSWORD=${INFLUXDB_PASSWORD:-admin123456}
+    profiles: ["persistent"]
+    networks:
+      - claude-observability
+    healthcheck:
+      test: ["CMD", "influx", "ping", "--host", "http://localhost:8086"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Grafana with embedded dashboard
+  grafana:
+    image: ghcr.io/jcernuda/graphana_test-grafana:latest
+    container_name: claude-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
+      - GF_USERS_ALLOW_SIGN_UP=false
+    depends_on:
+      influxdb:
+        condition: service_healthy
+      influxdb-persistent:
+        condition: service_healthy
+        required: false
+    networks:
+      - claude-observability
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000/api/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  claude-influxdb-data:
+    name: claude-observability-data
+
+networks:
+  claude-observability:
+    name: claude-observability-network

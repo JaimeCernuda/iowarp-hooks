@@ -1,0 +1,19 @@
+FROM influxdb:2.7
+
+# Set default environment variables for initialization
+ENV DOCKER_INFLUXDB_INIT_MODE=setup \
+    DOCKER_INFLUXDB_INIT_USERNAME=admin \
+    DOCKER_INFLUXDB_INIT_PASSWORD=admin123456 \
+    DOCKER_INFLUXDB_INIT_ORG=events-org \
+    DOCKER_INFLUXDB_INIT_BUCKET=application-events \
+    DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=claude-observability-token
+
+# The official InfluxDB image handles initialization with DOCKER_INFLUXDB_INIT_* variables
+# No additional setup script needed
+
+# Expose the default InfluxDB port
+EXPOSE 8086
+
+# Health check to ensure InfluxDB is ready
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD influx ping --host http://localhost:8086 || exit 1
