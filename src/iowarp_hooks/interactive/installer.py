@@ -55,11 +55,11 @@ class InteractiveInstaller:
     def run(self) -> bool:
         """Execute the interactive installation flow."""
         try:
-            # Show pre-install prompt
+            # Show pre-install prompt in a box
             if self.pre_install_prompt:
+                from rich.panel import Panel
                 console.print()
-                console.print(self.pre_install_prompt)
-                console.print()
+                console.print(Panel(self.pre_install_prompt, title="Setup Information", border_style="blue"))
             
             # Present path choices
             path_choice = self._get_user_path_choice()
@@ -94,18 +94,16 @@ class InteractiveInstaller:
             console.print("[red]No installation paths configured[/red]")
             return None
         
-        console.print("[bold]What do you want to do?[/bold]")
+        console.print("\n[bold]What do you want to do?[/bold]")
         
         # Create numbered choices
         path_items = list(self.paths.items())
         for i, (path_name, path_config) in enumerate(path_items, 1):
             console.print(f"  {i}. {path_config.label}")
         
-        console.print()
-        
-        # Get user choice
+        # Get user choice (no extra spacing)
         choices = [str(i) for i in range(1, len(path_items) + 1)]
-        choice = Prompt.ask("Select option", choices=choices)
+        choice = Prompt.ask("\nSelect option", choices=choices)
         
         # Return selected path name and config
         selected_path_name, selected_path_config = path_items[int(choice) - 1]
