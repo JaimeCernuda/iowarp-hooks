@@ -75,7 +75,7 @@ class CopyDockerInfrastructureAction(InstallationAction):
     def execute(self, context: ActionContext) -> bool:
         try:
             # Source directory (relative to project root)
-            project_root = context.hook_path.parent.parent.parent
+            project_root = context.hook_path.parent.parent  # Get to iowarp-hooks/
             source_dir = project_root / self.source
             
             if not source_dir.exists():
