@@ -1,0 +1,42 @@
+name: observability_influxdb
+description: InfluxDB observability plugin for OpenCode
+version: "1.0.0"
+category: observability
+
+# Environment variables required for this plugin
+environment:
+  INFLUXDB_URL: "http://localhost:8086"
+  INFLUXDB_TOKEN: "your-influxdb-token-here"
+  INFLUXDB_ORG: "my-org"
+  INFLUXDB_BUCKET: "application-events"
+  DEBUG_LOGGING: "true"
+
+# Files to copy
+files:
+  - src: influxdb-observability.js
+    dest: influxdb-observability.js
+    executable: true
+  - src: package.json
+    dest: package.json
+
+# Installation instructions
+install_instructions: |
+  1. Install Node.js dependencies:
+     npm install
+  
+  2. Set up your InfluxDB token in the environment or .env file
+  
+  3. Make sure InfluxDB is running and accessible
+  
+  4. The plugin will be automatically loaded by OpenCode
+
+# Usage information
+usage: |
+  This plugin automatically captures all OpenCode events including:
+  - Chat messages and parameters
+  - Tool executions (including MCP tools)
+  - Storage operations
+  - Permission requests
+  - Generic events
+  
+  All events are sent to InfluxDB for observability and analytics.

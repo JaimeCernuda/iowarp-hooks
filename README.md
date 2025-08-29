@@ -34,6 +34,21 @@ uvx iowarp-hooks install observability my-project --install-type global
 uvx iowarp-hooks uninstall observability
 ```
 
+### OpenCode Plugin Installation
+
+Install OpenCode plugins for observability and monitoring:
+
+```bash
+# Install plugin locally (to ./.opencode/plugin/)
+uv tool run iowarp-hooks install-opencode-plugin observability_influxdb
+
+# Install plugin globally (to ~/.config/opencode/plugin/)
+uv tool run iowarp-hooks install-opencode-plugin observability_influxdb --global-install
+
+# Force installation without confirmation
+uv tool run iowarp-hooks install-opencode-plugin observability_influxdb --force
+```
+
 ## Available Hook Sets
 
 ### Observability

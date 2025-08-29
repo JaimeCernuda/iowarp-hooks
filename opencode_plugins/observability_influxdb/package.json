@@ -1,0 +1,34 @@
+{
+  "name": "opencode-influxdb-observability",
+  "version": "1.0.0",
+  "description": "InfluxDB observability plugin for OpenCode - captures and sends telemetry data to InfluxDB for comprehensive monitoring and analytics",
+  "main": "influxdb-observability.js",
+  "type": "module",
+  "keywords": [
+    "opencode",
+    "plugin",
+    "observability",
+    "influxdb",
+    "telemetry",
+    "monitoring",
+    "analytics"
+  ],
+  "author": "OpenCode Observability Team",
+  "license": "MIT",
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "dependencies": {
+    "@influxdata/influxdb-client": "^1.35.0",
+    "dotenv": "^16.6.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "echo \"No linting configured\"",
+    "validate": "node -c influxdb-observability.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/opencode/plugins"
+  }
+}
