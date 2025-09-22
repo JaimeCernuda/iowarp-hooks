@@ -17,6 +17,11 @@ dependencies = [
     "rich>=12.0.0",
 ]
 
+[project.optional-dependencies]
+opencode = [
+    # Add any Python dependencies needed for OpenCode plugin management
+]
+
 [project.scripts]
 iowarp-hooks = "iowarp_hooks.hook_manager:main"
 
