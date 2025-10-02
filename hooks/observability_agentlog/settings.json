@@ -1,0 +1,92 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run --python 3.11 /path/to/.claude/hooks/send_event_chronolog.py --source-app claude_code --event-type UserPromptSubmit"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run --python 3.11 /path/to/.claude/hooks/send_event_chronolog.py --source-app claude_code --event-type PreToolUse"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run --python 3.11 /path/to/.claude/hooks/send_event_chronolog.py --source-app claude_code --event-type PostToolUse"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run --python 3.11 /path/to/.claude/hooks/send_event_chronolog.py --source-app claude_code --event-type SessionStart"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run --python 3.11 /path/to/.claude/hooks/send_event_chronolog.py --source-app claude_code --event-type Stop --add-chat"
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run --python 3.11 /path/to/.claude/hooks/send_event_chronolog.py --source-app claude_code --event-type SubagentStop"
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run --python 3.11 /path/to/.claude/hooks/send_event_chronolog.py --source-app claude_code --event-type PreCompact --add-chat"
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run --python 3.11 /path/to/.claude/hooks/send_event_chronolog.py --source-app claude_code --event-type Notification"
+          }
+        ]
+      }
+    ]
+  }
+}
